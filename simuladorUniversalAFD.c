@@ -7,7 +7,7 @@
 //Funcao que verifica se determinado estado eh um estado final
 bool ehEstadoFinal(int valor, int qntdEstadosAceitacao, char *estadosDeAceitacao){
     for(int i=0; i<qntdEstadosAceitacao; i++){
-        if(valor == estadosDeAceitacao[i]) return true;
+        if(valor == estadosDeAceitacao[i] - '0') return true;
     }return false;
 }
 
@@ -46,7 +46,7 @@ bool verificarCadeias(char **transicao, int nmrTransicoes, char *simbolos, int q
 
     estadoAtual = nmrEstadosIniciais-1; //Como foi solicitado, somente eh aceito AFD
 
-    for(i=0; i<strlen(cadeia); i++){
+    for(i=0; i<strlen(cadeia)-1; i++){
         simbAtual = cadeia[i];   //Recebe o simbolo
 
         //Quando houver somente o lambda na cadeia
@@ -59,9 +59,11 @@ bool verificarCadeias(char **transicao, int nmrTransicoes, char *simbolos, int q
         if(!pertenceAlfabeto(simbAtual, simbolos, qntdSimblos)) return false;
 
         //Quando for o ultimo simbolo a ser analisado
-        if(i == (strlen(cadeia)-1)){
+        if(i == (strlen(cadeia)-2)){
             //Se nao for uma transicao valida ou nao for o estado final, retorna falso
-            if(!verificaTransicao(&estadoAtual, estadoAtual, simbAtual, transicao, nmrTransicoes) || !ehEstadoFinal(estadoAtual, qntdEstadosAceitacao, estadosDeAceitacao)) return false;
+            if(!verificaTransicao(&estadoAtual, estadoAtual, simbAtual, transicao, nmrTransicoes) || !ehEstadoFinal(estadoAtual, qntdEstadosAceitacao, estadosDeAceitacao)){
+                return false;
+            }
         }
 
         //Se nao for uma transicao valida, retorna falso
@@ -102,7 +104,6 @@ void main(){
         system("Pause");
     }
 
-
     //Salva e separa os dados do arquivo em variaveis
     fscanf(arquivo, "%d", &nmrEstados);                                         //Linha 1. Numero de estados
     fscanf(arquivo, "%d", &qntdSimbolos);                                       //Linha 2. Conjunto de simbolos terminais
@@ -142,6 +143,7 @@ void main(){
     }
 
     //Verifica se cada uma das cadeias eh aceitada ou rejeitada
+    cadeia = fgets(bufferC, 21, arquivo);
     for(i=0; i<nmrCadeiasEntrada; i++){
         cadeia = fgets(bufferC, 21, arquivo);
 
@@ -150,20 +152,6 @@ void main(){
             fprintf(saida, "aceita\n");
         }else fprintf(saida, "rejeita\n");
     }
-
-    //------------------------DEBUG----------------------------------
-    printf("Numero de estados: %d\n", nmrEstados);
-    printf("Quantidade de simbolos: %d\n", qntdSimbolos);
-    printf("Simbolos: %s\n",simbolos);
-    printf("Numero de estados iniciais: %d\n", nmrEstadosIniciais);
-    printf("Numero de estados de aceitacao: %d\n", qntdEstadosAceitacao);
-    printf("Estados de aceitacao: %s\n",estadosDeAceitacao);
-    printf("Numero de transicoes: %d\n", nmrTransicoes);
-    for(i=0; i<nmrTransicoes; i++){
-        printf("Transicao: %i %c %i\n", transicao[aux][i], transicao[aux+1][i], transicao[aux+2][i]);
-    }
-    printf("Numero de cadeias de entrada: %d\n", nmrCadeiasEntrada);
-    //------------------------DEBUG----------------------------------
 
     fclose(saida);
     fclose(arquivo);
