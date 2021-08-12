@@ -29,7 +29,7 @@ bool verificaTransicao(int *estadoAtualP,int estadoAtual, char simbAtual, char *
         for(int j=0; j<4; j++){
             if(simbAtual == transicao[1][i] && estadoAtual == (int)transicao[0][i]-48){
                 //Atualiza o estado atual e retona true
-                novoEstado = (int)transicao[2][i]- '0';
+                novoEstado = (int)transicao[2][i]-48;
                 *estadoAtualP = novoEstado;
                 return true;
             }
