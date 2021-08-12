@@ -4,10 +4,12 @@
 #include <ctype.h>
 #include <stdbool.h>
 
+#define MAX_NAME_SZ 256
+
 //Funcao que verifica se determinado estado eh um estado final
 bool ehEstadoFinal(int valor, int qntdEstadosAceitacao, char *estadosDeAceitacao){
     for(int i=0; i<qntdEstadosAceitacao; i++){
-        if(valor == estadosDeAceitacao[i] - '0') return true;
+        if(valor == estadosDeAceitacao[i] - '0')return true;
     }return false;
 }
 
@@ -25,10 +27,9 @@ bool verificaTransicao(int *estadoAtualP,int estadoAtual, char simbAtual, char *
     //Percorre toda a matriz
     for(int i=0; i<nmrTransicoes; i++){
         for(int j=0; j<4; j++){
-            //Se o simbolo e o estado forem compativeis com alguma linha da matriz
-            if(simbAtual == transicao[1][i] && estadoAtual == transicao[0][i]){
+            if(simbAtual == transicao[1][i] && estadoAtual == (int)transicao[0][i]-48){
                 //Atualiza o estado atual e retona true
-                novoEstado = transicao[2][i];
+                novoEstado = (int)transicao[2][i]- '0';
                 *estadoAtualP = novoEstado;
                 return true;
             }
@@ -36,6 +37,7 @@ bool verificaTransicao(int *estadoAtualP,int estadoAtual, char simbAtual, char *
     }
 
     //Se nenhuma linha for compativel, retorna false
+    printf("Transicao Invalida\n");
     return false;
 }
 
@@ -67,7 +69,7 @@ bool verificarCadeias(char **transicao, int nmrTransicoes, char *simbolos, int q
         }
 
         //Se nao for uma transicao valida, retorna falso
-        if(!verificaTransicao(&estadoAtual, estadoAtual, simbAtual, transicao, nmrTransicoes)) return false;
+        if(!verificaTransicao(&estadoAtual, estadoAtual, simbAtual, transicao, nmrTransicoes))return false;
     }
     //Com todas as validacoes confirmadas, retorna true
     return true;
@@ -83,76 +85,57 @@ char *removeEspacos(char *saida, const char *entrada ){
         p++;
     }
     saida[i] = 0;
-    p == NULL;
+    p = NULL;
     return saida;
 }
 
-void main(){
+int main(){
     //Variaveis auxiliares
     int linha = 5, aux =0, i;
-    char bufferA[25], bufferB[25], bufferC[25];
 
     //Variaveis construtoras
     int nmrEstados, qntdSimbolos, nmrEstadosIniciais, qntdEstadosAceitacao, nmrTransicoes, nmrCadeiasEntrada;
     char **transicao = NULL, *simbolos, *estadosDeAceitacao, *cadeia;
 
-    FILE *arquivo = fopen("entrada.txt","r");
-
-    //Verifica se o arquivo existe
-    if(!arquivo){
-        printf("\n\nNao foi possivel ler o arquivo");
-        system("Pause");
-    }
+    //Alocando as variaveis
+    simbolos = malloc(MAX_NAME_SZ);
+    estadosDeAceitacao = malloc(MAX_NAME_SZ);
+    cadeia = malloc(MAX_NAME_SZ);
+    if(!simbolos || !estadosDeAceitacao || !cadeia) return 0;
 
     //Salva e separa os dados do arquivo em variaveis
-    fscanf(arquivo, "%d", &nmrEstados);                                         //Linha 1. Numero de estados
-    fscanf(arquivo, "%d", &qntdSimbolos);                                       //Linha 2. Conjunto de simbolos terminais
-    simbolos = fgets(bufferA, qntdSimbolos*2+1, arquivo);
+    scanf("%d", &nmrEstados);                                         //Linha 1. Numero de estados
+    scanf("%d", &qntdSimbolos);                                       //Linha 2. Conjunto de simbolos terminais
+    simbolos = fgets(simbolos, MAX_NAME_SZ, stdin);
     simbolos = removeEspacos(simbolos, simbolos);
-    fscanf(arquivo, "%d", &nmrEstadosIniciais);                                 //Linha 3. Numero de estados iniciais
-    fscanf(arquivo, "%d", &qntdEstadosAceitacao);                               //Linha 4. Conjunto de estados de aceitacao
-    estadosDeAceitacao = fgets(bufferB, qntdEstadosAceitacao*2+1, arquivo);
+    scanf("%d", &nmrEstadosIniciais);                                 //Linha 3. Numero de estados iniciais
+    scanf("%d", &qntdEstadosAceitacao);                               //Linha 4. Conjunto de estados de aceitacao
+    estadosDeAceitacao = fgets(estadosDeAceitacao, MAX_NAME_SZ, stdin);
     estadosDeAceitacao = removeEspacos(estadosDeAceitacao,estadosDeAceitacao);
-    fscanf(arquivo, "%d", &nmrTransicoes);                                      //Linha 5. Numero de transicoes
+    scanf("%d", &nmrTransicoes);                                      //Linha 5. Numero de transicoes
 
     //Aloca dinamicamente a matriz de transicao
     transicao = (char **)malloc(nmrTransicoes*sizeof(char *));
 
     if(!transicao){
         printf("\n\nErro ao criar a matriz de transicao");
-        system("Pause");
+        return 0;
     }
-    for(i=0; i<nmrTransicoes; i++){
-        transicao[i] = (char *)malloc(4*sizeof(char *));
-    }
+    for(i=0; i<nmrTransicoes; i++)transicao[i] = (char *)malloc(4*sizeof(char *));
 
     //Salva as transicoes na matriz
-    for(i=0; i<nmrTransicoes; i++){
-        fscanf(arquivo, "%i %c %i", &transicao[aux][i], &transicao[aux+1][i], &transicao[aux+2][i]);
-    }
+    for(i=0; i<nmrTransicoes; i++) scanf(" %c  %c  %c ", &transicao[aux][i], &transicao[aux+1][i], &transicao[aux+2][i]);
 
-    fscanf(arquivo, "%d", &nmrCadeiasEntrada);  //Linha depois das transicoes. Numero de cadeias de entrada
-
-    //Cria arquivo de saida
-    FILE *saida = fopen("saida.txt","w");
-
-    //Verifica se houve algum erro na criacao do arquivo
-    if(!saida){
-        printf("\n\nNao foi possivel criar o arquivo de saida");
-        system("Pause");
-    }
+    scanf("%d", &nmrCadeiasEntrada);  //Linha depois das transicoes. Numero de cadeias de entrada
 
     //Verifica se cada uma das cadeias eh aceitada ou rejeitada
-    cadeia = fgets(bufferC, 21, arquivo);
+    cadeia = fgets(cadeia, MAX_NAME_SZ, stdin);
     for(i=0; i<nmrCadeiasEntrada; i++){
-        cadeia = fgets(bufferC, 21, arquivo);
+        cadeia = fgets(cadeia, MAX_NAME_SZ, stdin);
 
         //Escreve no arquivo de saida
         if(verificarCadeias(transicao, nmrTransicoes, simbolos, qntdSimbolos, nmrEstadosIniciais, qntdEstadosAceitacao, estadosDeAceitacao, cadeia)){
-            fprintf(saida, "aceita\n");
-        }else fprintf(saida, "rejeita\n");
+            printf("aceita\n");
+        }else printf("rejeita\n");
     }
-
-    fclose(saida);
-    fclose(arquivo);
 }
