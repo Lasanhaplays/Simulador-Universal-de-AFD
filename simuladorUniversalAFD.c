@@ -41,7 +41,6 @@ bool verificaTransicao(int *estadoAtualP,int estadoAtual, char simbAtual, char *
     }
 
     //Se nenhuma linha for compativel, retorna false
-    printf("Transicao Invalida\n");
     return false;
 }
 
