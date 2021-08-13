@@ -1,3 +1,7 @@
+//Simulador de Automatos Finitos Deterministicos
+//Linguagens Formais e Automatos 2021/01
+//Lazaro Jose Pedrosa dos Reis
+//-----------------------------------------------
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -106,11 +110,11 @@ int main(){
     //Salva e separa os dados do arquivo em variaveis
     scanf("%d", &nmrEstados);                                         //Linha 1. Numero de estados
     scanf("%d", &qntdSimbolos);                                       //Linha 2. Conjunto de simbolos terminais
-    simbolos = fgets(simbolos, MAX_NAME_SZ, stdin);
+    fgets(simbolos, MAX_NAME_SZ, stdin);
     simbolos = removeEspacos(simbolos, simbolos);
     scanf("%d", &nmrEstadosIniciais);                                 //Linha 3. Numero de estados iniciais
     scanf("%d", &qntdEstadosAceitacao);                               //Linha 4. Conjunto de estados de aceitacao
-    estadosDeAceitacao = fgets(estadosDeAceitacao, MAX_NAME_SZ, stdin);
+    fgets(estadosDeAceitacao, MAX_NAME_SZ, stdin);
     estadosDeAceitacao = removeEspacos(estadosDeAceitacao,estadosDeAceitacao);
     scanf("%d", &nmrTransicoes);                                      //Linha 5. Numero de transicoes
 
